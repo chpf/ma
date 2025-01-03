@@ -1,0 +1,17 @@
+*
+
+
+
+!.gitignore
+!.dockerignore
+!Dockerfile
+
+# Subfolders
+!*/
+
+!**/*.c
+!**/*.cpp
+!**/*.clang-format
+!**/*.h
+!**/*.g4
+!**/CMakeLists.txt
