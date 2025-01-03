@@ -220,8 +220,7 @@ void generate_files(const BlisKernel &kernel) {
             CC_VENDOR      := clang
             #endif
 
-            CPPROCFLAGS    := --target=riscv32-unknown-elf -march=rv32ixexample -mabi=ilp32d --gcc-toolchain=/rv32gcv_ilp32d/ --sysroot=/rv32gcv_ilp32d/riscv32-unknown-elf/
-            #CPPROCFLAGS    := --target=riscv32-unknown-elf -march=rv32ixexample -mabi=ilp32d --gcc-toolchain=/rv32gcv_ilp32d/ --sysroot=/rv32gcv_ilp32d/riscv32-unknown-elf/
+            CPPROCFLAGS    := --target=riscv32-unknown-elf -march=rv32ixexample -mabi=ilp32d --gcc-toolchain=/opt/riscv --sysroot=/opt/riscv/riscv32-unknown-elf/
             CMISCFLAGS     := -fno-rtti -fno-exceptions
             CPICFLAGS      := -fPIC
             CWARNFLAGS     :=

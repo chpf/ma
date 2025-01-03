@@ -1,7 +1,7 @@
 #include <stdio.h>
 
 
-#if 0
+#if 1
 #include "blis.h"
 #define SIZE 4
 int main() {

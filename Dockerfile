@@ -1,6 +1,26 @@
 # TODO: multi stage build for toolchain and seal5, maybe even antlr4
 
+FROM ubuntu:24.04 AS gcc_toolchain_builder
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update -y && \
+    apt-get upgrade -y && \
+    apt-get install --no-install-recommends -y \
+    autoconf automake autotools-dev curl python3 python3-pip \
+    python3-tomli libmpc-dev libmpfr-dev libgmp-dev gawk build-essential bison flex \
+    texinfo gperf libtool patchutils bc zlib1g-dev libexpat-dev ninja-build git \
+    cmake libglib2.0-dev libslirp-dev
+
+RUN git clone https://github.com/riscv/riscv-gnu-toolchain
+WORKDIR /riscv-gnu-toolchain
+RUN git checkout 43536acae8791de5fc93acad51d0c03dda9f903e
+RUN ./configure --prefix=/opt/riscv --with-arch=rv32i --with-abi=ilp32 && make -j8
+
+
+
 FROM ubuntu:24.04
+
+COPY --from=gcc_toolchain_builder /opt/riscv /opt/riscv
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -48,10 +68,10 @@ ENV SEAL5_CLANG_DIR=/tmp/seal5_llvm_cli_demo/.seal5/build/release/bin/
 
 
 # fetch prebuild gnu-riscv toolchain
-RUN curl -sL https://github.com/PhilippvK/riscv-tools/releases/download/gnu_2024.09.03/riscv32-unknown-elf-ubuntu-24.04-rv32gcv_ilp32d.tar.xz \
-    -o riscv32-unknown-elf-ubuntu-24.04-rv32gcv_ilp32d.tar.xz && \
-    mkdir /rv32gcv_ilp32d && \
-    tar -xvf riscv32-unknown-elf-ubuntu-24.04-rv32gcv_ilp32d.tar.xz -C /rv32gcv_ilp32d
+# RUN curl -sL https://github.com/PhilippvK/riscv-tools/releases/download/gnu_2024.09.03/riscv32-unknown-elf-ubuntu-24.04-rv32gcv_ilp32d.tar.xz \
+#     -o riscv32-unknown-elf-ubuntu-24.04-rv32gcv_ilp32d.tar.xz && \
+#     mkdir /rv32gcv_ilp32d && \
+#     tar -xvf riscv32-unknown-elf-ubuntu-24.04-rv32gcv_ilp32d.tar.xz -C /opt/riscv
 
 # install ANTLR4 cli tool as packaged version is too old
 RUN cd /usr/local/lib && \
@@ -113,7 +133,8 @@ COPY test ./test
 RUN cd test && \
     cmake -G Ninja -B build -S . -DCMAKE_BUILD_TYPE=Debug
 
-#     cmake --build build
+WORKDIR /app/test
+# CMD  [  "cmake" ,"--build" ,"build"]
 CMD [ "/bin/bash"]
 
 
